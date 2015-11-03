@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+  <head>
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        font-family: '8bitoperator JVE';
+        color: white;
+        font-size: 22px;
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+      }
+
+      #wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        top: 0;
+        height: 720px;
+        width: 320px;
+        background-color: #00070F;
+      }
+
+      #header {
+        position: absolute;
+        z-index: 10;
+      }
+
+      #chat {
+        bottom: 68px;
+        position: absolute;
+        width: 100%;
+      }
+
+      #footer {
+        width: 320px;
+        height: 68px;
+        bottom: 0;
+        position: absolute;
+        border-top: 1px solid white;
+      }
+
+      #footer > span {
+        font-size: 19px;
+      }
+
+      .lineContainer {
+        display: none;
+      }
+
+      .lineContainer:nth-child(odd) {
+        background-color: rgba(86,86,86,.4);
+      }
+
+      .theLine {
+        padding: 5px 8px;
+        display: inline-block;
+      }
+
+      .right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">
+        <img src="includes/header.png" width="320">
+      </div>
+      <div id="chat"></div>
+      <div id="footer">
+        <span>Commands:<br>Up - Down - Left - Right - Z - X - C - Random</span>
+        <div>
+          <span id="stopwatch"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- <button onClick="addCommand({user:'darkdecay',command:'up'})" style="position:absolute;top:0;right:0;">Add</button> -->
+
+    <script src="http://cdn.tmijs.org/js/0.0.24/tmi.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.ui.min.js"></script>
+
+    <script>
+      var options = {
+        options: {
+            debug: true
+        },
+        connection: {
+            random: "chat",
+            reconnect: true
+        },
+        channels: ["#simulatedgreg"]
+      };
+
+      var client = new irc.client(options);
+
+      client.connect();
+
+      client.on('chat', function(channel, user, message, self) {
+        message = message.toLowerCase();
+        var commands = ['up', 'down', 'left', 'right', 'c', 'x', 'z'];
+        message.split(' ').forEach(function(n) {
+          var a = n.split(/(\w)(\d)/);
+
+          if(a.length !== 1) {
+            a = [a[0] + a[1], a[2]];
+          }
+
+          if(commands.indexOf(a[0]) > -1) {
+            addCommand({user:user.username,command: [a[0], a[1] || '']});
+          }
+        });
+      });
+
+
+      function addCommand(data) {
+        var newLine = $('<div class="lineContainer"><div class="theLine"><span>'
+          + data.user
+          + '</span><span class="right">'
+          + data.command.join('')
+          + '</span></div></div>');
+        $('#chat').append(newLine);
+        newLine.slideDown().find('.theLine').velocity('transition.fadeIn', {
+          duration: 1000
+        });
+      }
+
+      var Timer = {
+        currentTime: {
+          secs: 0,
+          mins: 0,
+          hours: 0,
+          days: 0
+        },
+        init: function() {
+          var setTime = this.setTime;
+          var updateScope = this.updateScope;
+          var start = 0;
+          setInterval(function() {
+            start++;
+            setTime(start);
+            updateScope();
+          }, 1000);
+        },
+        setTime: function(seconds) {
+          Timer.currentTime.days = seconds >= 86400 ? ~~(seconds / 86400) : 0;
+          seconds = seconds - (Timer.currentTime.days * 86400);
+          Timer.currentTime.hours = seconds >= 3600 ? ~~(seconds / 3600) : 0;
+          seconds = seconds - (Timer.currentTime.hours * 3600);
+          Timer.currentTime.mins = seconds >= 60 ? ~~(seconds / 60) : 0;
+          seconds = seconds - (Timer.currentTime.mins * 60);
+          Timer.currentTime.secs = seconds;
+        },
+        updateScope: function() {
+          $('#stopwatch')
+            .text(Timer.currentTime.days
+              + 'd '
+              + Timer.currentTime.hours
+              + 'h '
+              + Timer.currentTime.mins
+              + 'm '
+              + Timer.currentTime.secs
+              + 's');
+        }
+      };
+
+      Timer.init();
+    </script>
+
+  </body>
+</html>
