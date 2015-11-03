@@ -1,0 +1,24 @@
+{
+  "name": "twitch-plays-undertale",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "robotjs": "^0.3.3",
+    "tmi.js": "0.0.24"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simulatedgreg/twitch-plays-undertale.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simulatedgreg/twitch-plays-undertale/issues"
+  },
+  "homepage": "https://github.com/simulatedgreg/twitch-plays-undertale#readme"
+}
